@@ -6,6 +6,7 @@ import httpx
 from database import engine, Base
 from models import User, PantryItem
 from auth import router as auth_router
+from pantry import router as pantry_router
 
 load_dotenv()  # reads your .env file
 API_KEY = os.getenv("SPOONACULAR_API_KEY")  # grabs the value by name
@@ -15,6 +16,7 @@ app = FastAPI() # Creates the server
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
+app.include_router(pantry_router, prefix="/api/pantry", tags=["pantry"])
 
 Base.metadata.create_all(bind=engine) # creates the database tables based on the models we defined
 
