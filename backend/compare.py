@@ -1,0 +1,52 @@
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from database import get_db
+from models import User, SearchHistory
+from dependencies import get_current_user
+from ai import estimate_cost
+import httpx
+import os
+
+router = APIRouter()
+
+SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
+
+class CompareRequest(BaseModel):
+    ingredients: list[str]
+
+def fetch_recipes(ingredients: list[str]) -> list:
+    response = httpx.get(
+        "https://api.spoonacular.com/recipes/findByIngredients",
+        params={
+            "ingredients": ",".join(ingredients),
+            "number": 3,
+            "apiKey": SPOONACULAR_API_KEY
+        }
+    )
+    return response.json()
+
+@router.post("/compare")
+def compare(body: CompareRequest, db: Session = Depends(get_db)):
+    raw_recipes = fetch_recipes(body.ingredients)
+    
+    # Clean up — only keep what we need
+    recipes = [
+        {
+            "id": r["id"],
+            "title": r["title"],
+            "image": r["image"],
+            "usedCount": r["usedIngredientCount"],
+            "missedCount": r["missedIngredientCount"],
+            "missedIngredients": [i["name"] for i in r["missedIngredients"]],
+        }
+        for r in raw_recipes
+    ]
+
+    recipe_names = [r["title"] for r in recipes]
+    cost = estimate_cost(body.ingredients, recipe_names)
+
+    return {
+        "recipes": recipes,
+        "cost_estimate": cost
+    }
