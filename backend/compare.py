@@ -50,3 +50,36 @@ def compare(body: CompareRequest, db: Session = Depends(get_db)):
         "recipes": recipes,
         "cost_estimate": cost
     }
+
+def fetch_recipe_detail(recipe_id: int) -> dict:
+    response = httpx.get(
+        f"https://api.spoonacular.com/recipes/{recipe_id}/information",
+        params= {"apiKey": SPOONACULAR_API_KEY,
+                "includeNutrition": True
+                }
+    )
+    return response.json()
+
+@router.get("/recipes/{recipe_id}")
+@router.get("/recipes/{recipe_id}")
+def get_recipe_detail(recipe_id: int):
+    detail = fetch_recipe_detail(recipe_id)
+    
+    # Pull only the 4 nutrients we care about from the nutrients list
+    nutrients = detail.get("nutrition", {}).get("nutrients", [])
+    key_nutrients = {
+        n["name"]: round(n["amount"], 1)
+        for n in nutrients
+        if n["name"] in ["Calories", "Protein", "Carbohydrates", "Fat"]
+    }
+
+    return {
+        "id": detail["id"],
+        "title": detail["title"],
+        "image": detail["image"],
+        "readyInMinutes": detail.get("readyInMinutes"),
+        "servings": detail.get("servings"),
+        "instructions": detail.get("instructions"),
+        "ingredients": [i["original"] for i in detail["extendedIngredients"]],
+        "nutrition": key_nutrients
+    }
