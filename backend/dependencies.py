@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 import os
+from typing import Optional
 
 SECRET_KEY = os.getenv("SECRET_KEY", "devkey123")
 ALGORITHM = "HS256"
@@ -26,3 +27,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="User not found")
     
     return user
+
+def get_optional_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload.get("sub"))
+        return db.query(User).filter(User.id == user_id).first()
+    except (JWTError, TypeError, ValueError):
+        return None

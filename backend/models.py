@@ -15,6 +15,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
    
     pantry_items = relationship("PantryItem", back_populates="owner", cascade="all, delete")
+    search_history = relationship("SearchHistory", back_populates="user", cascade="all, delete")
 
 class PantryItem(Base):
     __tablename__ = "pantry_items"

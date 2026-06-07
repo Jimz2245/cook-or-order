@@ -8,6 +8,9 @@ from ai import estimate_cost
 import httpx
 import os
 from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from dependencies import get_optional_user
+from models import User, SearchHistory
 
 router = APIRouter()
 
@@ -28,7 +31,7 @@ def fetch_recipes(ingredients: list[str]) -> list:
     return response.json()
 
 @router.post("/compare")
-def compare(body: CompareRequest, db: Session = Depends(get_db)):
+def compare(body: CompareRequest, db: Session = Depends(get_db), current_user: Optional[User] = Depends(get_optional_user)):
     # Case 1: empty ingredients
     if not body.ingredients:
         raise HTTPException(status_code=400, detail="No Ingredients Provided")
@@ -66,6 +69,14 @@ def compare(body: CompareRequest, db: Session = Depends(get_db)):
     except Exception:
         cost = {"cost": recipes[0]["title"], "deliveryEstimate": 0, "homeEstimate": 0, "reasoning": "Cost estimate unavailable"}
     
+    if current_user:
+        history = SearchHistory(
+            user_id=current_user.id,
+            ingredients_used=",".join(body.ingredients)
+        )
+    db.add(history)
+    db.commit()
+
     return {"recipes": recipes, "cost_estimate": cost}
 
 def fetch_recipe_detail(recipe_id: int) -> dict:
