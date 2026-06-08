@@ -1,16 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from typing import Optional
 from database import get_db
 from models import User, SearchHistory
-from dependencies import get_current_user
+from dependencies import get_optional_user
 from ai import estimate_cost
 import httpx
 import os
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Optional
-from dependencies import get_optional_user
-from models import User, SearchHistory
 
 router = APIRouter()
 
@@ -69,15 +66,19 @@ def compare(body: CompareRequest, db: Session = Depends(get_db), current_user: O
     except Exception:
         cost = {"cost": recipes[0]["title"], "deliveryEstimate": 0, "homeEstimate": 0, "reasoning": "Cost estimate unavailable"}
     
+
+    history_entry = None
+
     if current_user:
-        history = SearchHistory(
+        history_entry = SearchHistory(
             user_id=current_user.id,
             ingredients_used=",".join(body.ingredients)
         )
-    db.add(history)
-    db.commit()
+        db.add(history_entry)    # ← must be indented under if
+        db.commit()              # ← must be indented under if
 
     return {"recipes": recipes, "cost_estimate": cost}
+
 
 def fetch_recipe_detail(recipe_id: int) -> dict:
     response = httpx.get(
