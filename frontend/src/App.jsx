@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import Navbar from "./components/Navbar"
 import { getToken, removeToken } from "./api"
 import ComparePage from "./pages/ComparePage"
+import AuthPage from "./pages/AuthPage"
+
 
 
 export default function App() {
@@ -28,6 +30,12 @@ export default function App() {
           />
           <main style={{ maxWidth: 900, margin: "0 auto", padding: "2rem" }}>
               {page === "compare" && <ComparePage isLoggedIn={isLoggedIn} />}
+              {page === "auth" && (
+                  <AuthPage onSuccess={() => {
+                      setIsLoggedIn(true)
+                      setPage("compare")
+                  }} />
+              )}
           </main>
       </div>
   )

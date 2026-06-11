@@ -1,6 +1,7 @@
 import { useState } from "react"
 import IngredientInput from "../components/IngredientInput"
 import { compare, getPantry } from "../api"
+import RecipeCard from "../components/RecipeCard"
 
 export default function ComparePage({ isLoggedIn }) {
     const [ingredients, setIngredients] = useState([])
@@ -40,19 +41,29 @@ export default function ComparePage({ isLoggedIn }) {
                 setIngredients={setIngredients}
                 onLoadPantry={isLoggedIn ? handleLoadPantry : null}
             />
-            <button onClick={handleCompare} disabled={loading || ingredients.length === 0}>
+            <button 
+                onClick={handleCompare} 
+                disabled={loading || ingredients.length === 0}
+                style={{ marginTop: 16 }}
+            >
                 {loading ? "Finding recipes..." : "Compare →"}
             </button>
             {error && <p>{error}</p>}
             {/* Show results when they exist */}
             {results && (
                 <div>
+                    <div style={{ background: "#1a1a1a", color: "white", padding: "20px", borderRadius: "12px", marginTop: "20px" }}>
+                        <p>Ordering {results.cost_estimate.cost} would cost ~${results.cost_estimate.deliveryEstimate}</p>
+                        <p>Making it at home would cost ~${results.cost_estimate.homeEstimate}</p>
+                        <p style={{ opacity: 0.7}}>{results.cost_estimate.reasoning}</p>
+                    </div>
                     <h2>Recipes you can make:</h2>
-                    <ul>
+                    {/* Recipe grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16, marginTop: 24 }}>
                         {results.recipes.map(r => (
-                            <li key={r.id}>{r.title}</li>
+                            <RecipeCard key={r.id} recipe={r} />
                         ))}
-                    </ul>
+                    </div>
                 </div>
             )}
         </div>
