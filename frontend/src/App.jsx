@@ -4,6 +4,7 @@ import { getToken, removeToken } from "./api"
 import ComparePage from "./pages/ComparePage"
 import AuthPage from "./pages/AuthPage"
 import PantryPage from "./pages/PantryPage"
+import HistoryPage from "./pages/HistoryPage"
 
 export default function App() {
     const [page, setPage] = useState("compare")
@@ -36,6 +37,7 @@ export default function App() {
                     }} />
                 )}
                 {page === "pantry" && (isLoggedIn ? <PantryPage /> : <AuthPage onSuccess={() => { setIsLoggedIn(true); setPage("pantry") }} />)}
+                {page === "history" && (isLoggedIn ? <HistoryPage /> : <AuthPage onSuccess={() => { setIsLoggedIn(true); setPage("history") }} />)}
             </main>
         </div>
     )

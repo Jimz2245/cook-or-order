@@ -6,7 +6,7 @@ export default function HistoryPage() {
 
     useEffect(() => {
         getHistory()
-            .then(data => setHistory(data))
+            .then(data => setHistory(data.history))
             .catch(err => console.error("Failed to load history", err))
     }, [])
 
@@ -16,7 +16,7 @@ export default function HistoryPage() {
             <ul>
                 {history.map(item => (
                     <li key={item.id}>
-                        {item.name} - {item.date}
+                        {item.ingredients.join(", ")} — {new Date(item.searched_at).toLocaleDateString()}
                     </li>
                 ))}
             </ul>
