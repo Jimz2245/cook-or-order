@@ -14,7 +14,7 @@ export default function IngredientInput({ ingredients, setIngredients, onLoadPan
     return (
         <div>
             {/* Input row */}
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
                 <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}

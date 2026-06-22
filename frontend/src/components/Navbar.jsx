@@ -1,6 +1,6 @@
 export default function Navbar({ page, setPage, isLoggedIn, onLogout }) {
     return (
-        <nav>
+        <nav style={{ display: "flex", justifyContent: "space-between", padding: "10px 32px", height: 32, background: "#ffffff", borderBottom: "1px solid #eee", position: "sticky", top: 0, zIndex: 100 }}>
             {/* App name on the left */}
             <span>🍳 Cook or Order</span>
 
