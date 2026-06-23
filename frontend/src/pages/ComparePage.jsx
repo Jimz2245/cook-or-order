@@ -46,7 +46,7 @@ export default function ComparePage({ isLoggedIn }) {
                 <button
                     onClick={handleCompare}
                     disabled={loading || ingredients.length === 0}
-                    style={{ marginTop: 16, width: 200 }}
+                    style={{ marginTop: 16, width: 200, background: "var(--accent)", color: "white", borderRadius: "8px", fontWeight: "bold", padding: "8px 16px", border: "none", fontSize: "14px" }}
                 >
                     {loading ? "Finding recipes..." : "Compare →"}
                 </button>
