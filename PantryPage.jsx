@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getPantry, addPantryItem, deletePantryItem } from "../utils/auth";
+import { getPantry, addPantryItem, deletePantryItem } from "../api";
 
 export default function PantryPage() {
   const [items, setItems] = useState([]);
@@ -8,8 +8,8 @@ export default function PantryPage() {
 
   useEffect(() => {
     getPantry().then((data) => {
-      setItems(data.items);
-      setLoading(false);
+        setItems(data.items || []);
+        setLoading(false);
     });
   }, []);
 
