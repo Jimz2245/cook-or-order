@@ -4,12 +4,18 @@ import { getPantry, addPantryItem, deletePantryItem } from "../api"
 export default function PantryPage() {
     const [items, setItems] = useState([])
     const [input, setInput] = useState("")
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // load pantry items when component mounts
-        getPantry()
-            .then(data => setItems(data.items))
-            .catch(err => console.error("Failed to load pantry", err))
+    getPantry()
+        .then(data => {
+            setItems(data.items || [])
+            setLoading(false)
+        })
+        .catch(err => {
+            console.error("Failed to load pantry", err)
+            setLoading(false)
+        })
     }, [])
 
     const handleAdd = async () => {
