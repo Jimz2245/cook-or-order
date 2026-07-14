@@ -3,8 +3,7 @@ import IngredientInput from "../components/IngredientInput"
 import { compare, getPantry } from "../api"
 import RecipeCard from "../components/RecipeCard"
 
-export default function ComparePage({ isLoggedIn }) {
-    const [ingredients, setIngredients] = useState([])
+export default function ComparePage({ isLoggedIn, ingredients, setIngredients }) {
     const [results, setResults] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)

@@ -9,6 +9,7 @@ import HistoryPage from "./pages/HistoryPage"
 export default function App() {
     const [page, setPage] = useState("compare")
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [ingredients, setIngredients] = useState([])
 
     useEffect(() => {
         setIsLoggedIn(!!getToken())
@@ -29,7 +30,6 @@ export default function App() {
                 onLogout={handleLogout}
             />
             <main style={{ maxWidth: 900, margin: "0 auto", padding: "2rem" }}>
-                {page === "compare" && <ComparePage isLoggedIn={isLoggedIn} />}
                 {page === "auth" && (
                     <AuthPage onSuccess={() => {
                         setIsLoggedIn(true)
@@ -38,6 +38,7 @@ export default function App() {
                 )}
                 {page === "pantry" && (isLoggedIn ? <PantryPage /> : <AuthPage onSuccess={() => { setIsLoggedIn(true); setPage("pantry") }} />)}
                 {page === "history" && (isLoggedIn ? <HistoryPage /> : <AuthPage onSuccess={() => { setIsLoggedIn(true); setPage("history") }} />)}
+                {page === "compare" && <ComparePage isLoggedIn={isLoggedIn} ingredients={ingredients} setIngredients={setIngredients} />}
             </main>
         </div>
     )
